@@ -41,9 +41,6 @@ public class Geolocation extends CordovaPlugin {
     protected String[] needPermissions = {
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.READ_PHONE_STATE
     };
 
     private static final int PERMISSON_REQUEST_CODE = 0;
@@ -131,55 +128,62 @@ public class Geolocation extends CordovaPlugin {
         @Override
         public void onLocationChanged(AMapLocation location) {
             try {
-                JSONObject json = new JSONObject();
+
+                JSONObject position = new JSONObject();
+
+                JSONObject coords = new JSONObject();
+
                 if (null != location) {
                     //解析定位结果
                     //errCode等于0代表定位成功，其他的为定位失败，具体的可以参照官网定位错误码说明
                     if (location.getErrorCode() == 0) {
-                        json.put("status", "定位成功");
+                        coords.put("status", "定位成功");
                         //定位类型
-                        json.put("type", location.getLocationType());
+                        coords.put("type", location.getLocationType());
                         //纬度
-                        json.put("latitude", location.getLatitude());
+                        coords.put("latitude", location.getLatitude());
                         //经度
-                        json.put("longitude", location.getLongitude());
+                        coords.put("longitude", location.getLongitude());
                         //精度
-                        json.put("accuracy", location.getAccuracy());
+                        coords.put("accuracy", location.getAccuracy());
                         //角度
-                        json.put("bearing", location.getBearing());
+                        coords.put("bearing", location.getBearing());
                         // 获取当前提供定位服务的卫星个数
                         //星数
-                        json.put("satellites", location.getSatellites());
+                        coords.put("satellites", location.getSatellites());
                         //国家
-                        json.put("country", location.getCountry());
+                        coords.put("country", location.getCountry());
                         //省
-                        json.put("province", location.getProvince());
+                        coords.put("province", location.getProvince());
                         //市
-                        json.put("city", location.getCity());
+                        coords.put("city", location.getCity());
                         //城市编码
-                        json.put("citycode", location.getCityCode());
+                        coords.put("citycode", location.getCityCode());
                         //区
-                        json.put("district", location.getDistrict());
+                        coords.put("district", location.getDistrict());
                         //区域码
-                        json.put("adcode", location.getAdCode());
+                        coords.put("adcode", location.getAdCode());
                         //地址
-                        json.put("address", location.getAddress());
+                        coords.put("address", location.getAddress());
                         //兴趣点
-                        json.put("poi", location.getPoiName());
+                        coords.put("poi", location.getPoiName());
                         //兴趣点
-                        json.put("time", location.getTime());
+                        coords.put("time", location.getTime());
                     } else {
-                        json.put("status", "定位失败");
-                        json.put("errcode", location.getErrorCode());
-                        json.put("errinfo", location.getErrorInfo());
-                        json.put("detail", location.getLocationDetail());
+                        coords.put("status", "定位失败");
+                        coords.put("errcode", location.getErrorCode());
+                        coords.put("errinfo", location.getErrorInfo());
+                        coords.put("detail", location.getLocationDetail());
                     }
+
                     //定位之后的回调时间
-                    json.put("backtime", System.currentTimeMillis());
+                    position.put("timestamp", System.currentTimeMillis());
+                    position.put("coords", coords);
+
                 } else {
 
                 }
-                PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, json);
+                PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, position);
                 pluginResult.setKeepCallback(true);
                 cb.sendPluginResult(pluginResult);
             } catch (JSONException e) {
